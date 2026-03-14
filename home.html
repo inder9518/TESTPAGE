@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Responsive Layout</title>
+    <style>
+        /* General Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        /* --- Header: 4 Corner Curve --- */
+        header {
+            background: #ffffff;
+            margin: 15px;
+            padding: 12px 25px;
+            border-radius: 15px; /* Charon corners curved */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .logo img {
+            height: 40px;
+            display: block;
+        }
+
+        .home-btn {
+            text-decoration: none;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .home-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Card Container --- */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 10px 20px 40px 20px;
+            justify-content: center;
+        }
+
+        /* --- Card Design (Responsive) --- */
+        .card {
+            background: #fff;
+            /* PC: Left-Right layout (2 cards) */
+            width: calc(50% - 20px); 
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-content {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .card-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card-content p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* --- Go Button --- */
+        .go-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #28a745;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .go-btn:hover {
+            background: #218838;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media screen and (max-width: 768px) {
+            .card {
+                width: 100%; /* Mobile: Ek card niche ek */
+            }
+            header {
+                margin: 10px;
+                padding: 10px 15px;
+            }
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #222;
+            color: #bbb;
+            padding: 30px;
+            text-align: center;
+            border-radius: 20px 20px 0 0; /* Top curves for footer style */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="https://via.placeholder.com/120x40?text=LOGO" alt="Logo">
+        </div>
+        <a href="#" class="home-btn">Home</a>
+    </header>
+
+    <div class="card-container">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500" alt="Phone">
+            <div class="card-content">
+                <h3>Latest Electronics</h3>
+                <p>Naye gadgets aur electronics par best deals check karein.</p>
+                <a href="FIRSTCARD.HTML" class="go-btn">GO</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=500" alt="Tech">
+            <div class="card-content">
+                <h3>PC Components</h3>
+                <p>Apna dream PC build karne ke liye best hardware yahan hai.</p>
+                <a href="#" class="go-btn">GO</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 TechDroide. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
