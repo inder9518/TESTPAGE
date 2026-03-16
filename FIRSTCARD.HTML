@@ -10,7 +10,7 @@
 
         header { background: #fff; margin: 15px; padding: 12px 25px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .logo img { height: 40px; }
-        .home-btn { text-decoration: none; background: #007bff; color: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; }
+        .home-btn { text-decoration: none; background: #007bff; color: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; transition: 0.3s; }
 
         main { flex: 1; padding: 10px; }
         #gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 1200px; margin: 0 auto; }
@@ -19,7 +19,6 @@
         .photo-item img { width: 100%; height: auto; object-fit: contain; display: block; transition: 0.3s; }
         .photo-item img:hover { opacity: 0.8; }
 
-        /* --- Full View Overlay (Fixed) --- */
         #overlay { 
             display: none; 
             position: fixed; 
@@ -42,21 +41,21 @@
 
         #fullImage { 
             max-width: 95vw; 
-            max-height: 70vh; /* Photo ko buttons ke liye jagah dene ke liye limit kiya */
+            max-height: 70vh; 
             object-fit: contain;
             border-radius: 5px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         .controls { 
-            margin-top: 20px; /* Photo ke niche gap */
+            margin-top: 20px; 
             display: flex; 
             gap: 15px; 
             justify-content: center;
             width: 100%;
         }
 
-        .btn { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 1rem; }
+        .btn { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 1rem; text-align: center; }
         .btn-dl { background: #28a745; color: white; }
         .btn-close { background: #dc3545; color: white; }
 
@@ -64,7 +63,7 @@
 
         @media (max-width: 768px) { 
             #gallery-grid { grid-template-columns: 1fr; } 
-            .btn { padding: 10px 20px; font-size: 0.9rem; }
+            .btn { padding: 10px 20px; font-size: 0.9rem; width: 45%; }
         }
     </style>
 </head>
@@ -85,7 +84,7 @@
         <div class="overlay-content">
             <img id="fullImage" src="" alt="Loading...">
             <div class="controls">
-                <a id="dlButton" href="" download class="btn btn-dl">DOWNLOAD</a>
+                <button id="dlButton" class="btn btn-dl" onclick="directDownload()">DOWNLOAD</button>
                 <button class="btn btn-close" onclick="closeImage()">CLOSE</button>
             </div>
         </div>
@@ -96,6 +95,7 @@
     <script>
         const API_KEY = 'AIzaSyAtDfn2XQlVWWGoXpBXjAKdS9pjphYArZI'; 
         const FOLDER_ID = '1YgXksHx-gGgYVQT7pJn1wUyqKyn0dZJZ';
+        let currentFileId = '';
 
         async function fetchPhotos() {
             const grid = document.getElementById('gallery-grid');
@@ -111,7 +111,6 @@
                         const div = document.createElement('div');
                         div.className = 'photo-item';
                         div.onclick = () => openImage(file.id);
-                        // Thumbnail URL for grid
                         const thumbUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
                         div.innerHTML = `<img src="${thumbUrl}" loading="lazy" alt="${file.name}">`;
                         grid.appendChild(div);
@@ -125,21 +124,57 @@
         }
 
         function openImage(id) {
+            currentFileId = id; // Store ID for download
             const overlay = document.getElementById('overlay');
             const fullImg = document.getElementById('fullImage');
+            const dlBtn = document.getElementById('dlButton');
             
-            // Fast preview link (Original quality but optimized for web)
+            dlBtn.innerText = "DOWNLOAD"; // Reset button text
             const previewUrl = `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
-            const downloadUrl = `https://drive.google.com/uc?export=download&id=${id}`;
 
             fullImg.src = previewUrl;
-            document.getElementById('dlButton').href = downloadUrl;
             overlay.style.display = 'flex';
+        }
+
+        // --- DIRECT DOWNLOAD LOGIC (NO REDIRECT) ---
+        async function directDownload() {
+            if (!currentFileId) return;
+            const dlBtn = document.getElementById('dlButton');
+            const originalText = dlBtn.innerText;
+            
+            try {
+                dlBtn.innerText = "WAIT..."; // Feedback to user
+                
+                // Direct URL for the file
+                const downloadUrl = `https://www.googleapis.com/drive/v3/files/${currentFileId}?alt=media&key=${API_KEY}`;
+                
+                const response = await fetch(downloadUrl);
+                const blob = await response.blob();
+                
+                // Create a temporary link to trigger local download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `Photo_${currentFileId}.jpg`; // Local filename
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(url);
+                dlBtn.innerText = "DONE!";
+                setTimeout(() => dlBtn.innerText = originalText, 2000);
+            } catch (e) {
+                console.error(e);
+                dlBtn.innerText = "ERROR";
+                // Fallback in case fetch fails
+                window.open(`https://drive.google.com/uc?export=download&id=${currentFileId}`, '_blank');
+            }
         }
 
         function closeImage() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('fullImage').src = ''; 
+            currentFileId = '';
         }
 
         fetchPhotos();
